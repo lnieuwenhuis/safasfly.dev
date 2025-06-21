@@ -14,6 +14,13 @@ function App() {
       url: "https://chat.safasfly.dev",
       backend: ["GoLang", "MariaDB", "Docker"],
       frontend: ["React", "TypeScript", "Tailwind CSS"]
+    },
+    {
+      name: "AI Chat App",
+      description: "An AI-powered chat application that uses OpenRouter to generate responses. Users can have conversations with the AI in a natural language manner.",
+      url: "https://ai.safasfly.dev",
+      backend: ["GoLang", "MariaDB", "Docker"],
+      frontend: ["React", "TypeScript", "Tailwind CSS"]
     }
   ];
 
