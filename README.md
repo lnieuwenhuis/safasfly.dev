@@ -33,7 +33,7 @@ cp .env.example .env
 npm run dev
 ```
 
-Backend runs at `http://localhost:3001`.
+Backend runs at `http://localhost:3002`.
 
 Seeded admin defaults:
 
@@ -49,7 +49,7 @@ npm run dev
 ```
 
 Frontend runs at `http://localhost:5173`.
-Vite proxies `/api/*` to `http://localhost:3001` during development.
+Vite proxies `/api/*` to `http://localhost:3002` during development.
 
 ## Backend Deployment (Single Docker Command)
 
@@ -80,7 +80,7 @@ VITE_API_BASE=/api npm run build
 
 Output is generated in `frontend/dist/`.
 
-Serve that directory with nginx and proxy `/api` to backend (`127.0.0.1:3001`).
+Serve that directory with nginx and proxy `/api` to backend (`127.0.0.1:3002`).
 
 Example nginx block:
 
@@ -93,7 +93,7 @@ server {
     index index.html;
 
     location /api {
-        proxy_pass http://127.0.0.1:3001;
+        proxy_pass http://127.0.0.1:3002;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

@@ -29,9 +29,9 @@ RUN mkdir -p /app/data && chown -R hono:nodejs /app
 USER hono
 
 ENV NODE_ENV=production
-ENV PORT=3001
+ENV PORT=3002
 ENV DB_PATH=/app/data/portfolio.db
 
-EXPOSE 3001
+EXPOSE 3002
 
 CMD ["node", "dist/server.js"]

@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 import app from './index.js';
 
-const port = parseInt(process.env.PORT || '3001');
+const port = parseInt(process.env.PORT || '3002');
 
 serve({
   fetch: app.fetch,

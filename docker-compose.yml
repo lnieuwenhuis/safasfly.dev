@@ -6,12 +6,12 @@ services:
     container_name: safasfly-api
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "3002:3002"
     env_file:
       - ./.env
     environment:
       NODE_ENV: production
-      PORT: 3001
+      PORT: 3002
       DB_PATH: ${DB_PATH:-/app/data/portfolio.db}
       ADMIN_SESSION_TTL_DAYS: ${ADMIN_SESSION_TTL_DAYS:-30}
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-lnieuwenhuis48@icloud.com}
@@ -22,7 +22,7 @@ services:
     volumes:
       - backend_data:/app/data
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3002/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

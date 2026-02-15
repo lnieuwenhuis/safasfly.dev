@@ -23,7 +23,7 @@ npm run preview
 The app expects backend APIs under `VITE_API_BASE`.
 
 - Default: `/api`
-- Local dev: Vite proxies `/api` to `http://localhost:3001`
+- Local dev: Vite proxies `/api` to `http://localhost:3002`
 - Production (nginx): keep `VITE_API_BASE=/api` and proxy `/api` to backend
 
 ## Admin Login
