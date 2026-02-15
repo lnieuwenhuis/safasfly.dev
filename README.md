@@ -1,31 +1,44 @@
-# Safasfly.dev Portfolio
+# safasfly.dev
 
-Portfolio website for Lars Nieuwenhuis (Safasfly).
+Dark-theme portfolio website for Lars Nieuwenhuis (freelance developer), with separate frontend deployment and Dockerized backend API.
 
-## Project Structure
+## Architecture
 
-```
-safasfly.dev/
-├── backend/          # Hono API server (Docker)
-├── frontend/         # React + TypeScript + Tailwind
-└── docker-compose.yml
-```
+- `frontend/`: React + TypeScript + Vite + Tailwind v4 (served as static files via nginx)
+- `backend/`: Hono API with SQLite persistence, admin auth/session handling, project CRUD, and contact request inbox
 
-## Development
+## Features
 
-### Prerequisites
-- Node.js 22+
-- Bun or npm
+- Dark-only design with blurple and deep purple visual language
+- Sticky navbar
+- Route-based frontend pages:
+  - `/` home (latest 2 projects)
+  - `/projects` all projects
+  - `/contact` contact form
+  - `/admin` admin login + dashboard
+- Admin dashboard:
+  - login with seeded admin account
+  - add/edit/delete projects
+  - view contact requests
+- SQLite-backed persistence for projects and contacts
+
+## Local Development
 
 ### Backend
 
 ```bash
 cd backend
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-Server runs on http://localhost:3001
+Backend runs at `http://localhost:3001`.
+
+Seeded admin defaults:
+
+- Email: `lnieuwenhuis48@icloud.com`
+- Password: `***REMOVED_SECRET***`
 
 ### Frontend
 
@@ -35,48 +48,46 @@ npm install
 npm run dev
 ```
 
-Frontend runs on http://localhost:5173
+Frontend runs at `http://localhost:5173`.
+Vite proxies `/api/*` to `http://localhost:3001` during development.
 
-## Production Deployment
+## Backend Deployment (Single Docker Command)
 
-### Backend (Docker)
+1. Configure backend env:
 
-1. Create `.env` file:
-```env
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=your-email@example.com
-SMTP_PASS=your-password
-CONTACT_EMAIL=contact@safasfly.dev
+```bash
+cd backend
+cp .env.example .env
 ```
 
-2. Deploy:
+2. Deploy backend:
+
 ```bash
 docker compose up -d --build
 ```
 
-Backend will be available on port 3001.
+This command is backend-only and uses `backend/docker-compose.yml`.
 
-### Frontend (Static Build)
+## Frontend Build and nginx Deploy
 
-Build the frontend and serve via your nginx:
+Build manually on your server:
 
 ```bash
 cd frontend
-VITE_API_URL=https://safasfly.dev npm run build
+npm ci
+VITE_API_BASE=/api npm run build
 ```
 
-The built files will be in `frontend/dist/`.
+Output is generated in `frontend/dist/`.
 
-### Nginx Config Example
+Serve that directory with nginx and proxy `/api` to backend (`127.0.0.1:3001`).
+
+Example nginx block:
 
 ```nginx
 server {
     listen 443 ssl http2;
     server_name safasfly.dev www.safasfly.dev;
-
-    ssl_certificate /path/to/fullchain.pem;
-    ssl_certificate_key /path/to/privkey.pem;
 
     root /var/www/safasfly.dev/dist;
     index index.html;
@@ -97,11 +108,25 @@ server {
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/health` | GET | Health check |
-| `/api/about` | GET | Get about info |
-| `/api/projects` | GET | List all projects |
-| `/api/projects/:id` | GET | Get single project |
-| `/api/socials` | GET | Get social links |
-| `/api/contact` | POST | Submit contact form |
+Public:
+
+- `GET /api/health`
+- `GET /api/about`
+- `GET /api/projects`
+- `GET /api/projects/:id`
+- `GET /api/socials`
+- `POST /api/contact`
+
+Auth:
+
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+
+Admin (authenticated session token via `Authorization: Bearer <token>`):
+
+- `GET /api/admin/projects`
+- `POST /api/admin/projects`
+- `PUT /api/admin/projects/:id`
+- `DELETE /api/admin/projects/:id`
+- `GET /api/admin/contacts`

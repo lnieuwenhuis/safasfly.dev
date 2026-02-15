@@ -20,14 +20,17 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 hono
 
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+
+RUN mkdir -p /app/data && chown -R hono:nodejs /app
 
 USER hono
 
 ENV NODE_ENV=production
 ENV PORT=3001
+ENV DB_PATH=/app/data/portfolio.db
 
 EXPOSE 3001
 

@@ -6,6 +6,8 @@ export interface Project {
   backend: string[];
   frontend: string[];
   featured?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AboutInfo {
