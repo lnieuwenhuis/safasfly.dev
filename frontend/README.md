@@ -1,6 +1,14 @@
 # Frontend
 
-React + TypeScript frontend for safasfly.dev.
+React + TypeScript + Vite frontend for safasfly.dev.
+
+## Stack
+
+- React 19
+- TypeScript
+- Vite
+- `react-router-dom`
+- Tailwind v4
 
 ## Commands
 
@@ -9,28 +17,46 @@ npm install
 npm run dev
 npm run build
 npm run preview
+npm run start
 ```
 
-## Routes
+## Main Routes
 
-- `/` home page (latest 2 projects)
-- `/projects` all projects
-- `/contact` contact form page
-- `/admin` admin login and dashboard
+- `/`
+- `/projects`
+- `/services`
+- `/insights`
+- `/contact`
+- `/free-audit`
+- `/terms`
+- `/privacy`
+- `/maintenance-agreement`
+- `/admin`
+- `/admin/dashboard`
 
 ## API Configuration
 
-The app expects backend APIs under `VITE_API_BASE`.
+The app expects backend APIs at `VITE_API_BASE`.
 
 - Default: `/api`
 - Local dev: Vite proxies `/api` to `http://localhost:3002`
-- Production (nginx): keep `VITE_API_BASE=/api` and proxy `/api` to backend
+- Production: keep `VITE_API_BASE=/api` and let nginx proxy `/api` to backend
 
-## Admin Login
+## Staging Guard
 
-Seeded defaults:
+A staging unlock screen is enabled automatically when hostname starts with `staging.`.
 
-- Email: `lnieuwenhuis48@icloud.com`
-- Password: `***REMOVED_SECRET***`
+- Password is verified via `POST /api/auth/staging-unlock`
+- Successful unlock is stored in `sessionStorage` for the current browser tab
 
-Change these via backend env in production.
+Optional env vars:
+
+- `VITE_STAGING_GUARD=true` to force guard on any hostname
+- `VITE_STAGING_HOST_PREFIX=staging.` to customize the hostname prefix check
+
+## Railway
+
+- Set service root directory to `frontend`
+- Build command: `npm run build`
+- Start command: `npm run start`
+- Set `VITE_API_BASE=https://<your-backend-domain>/api`

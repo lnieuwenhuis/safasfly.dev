@@ -1,26 +1,47 @@
 # safasfly.dev
 
-Dark-theme portfolio website for Lars Nieuwenhuis (freelance developer), with separate frontend deployment and Dockerized backend API.
+Dark-theme portfolio and sales site for Lars Nieuwenhuis (solo freelance developer), with independent frontend and backend deployment.
 
 ## Architecture
 
-- `frontend/`: React + TypeScript + Vite + Tailwind v4 (served as static files via nginx)
-- `backend/`: Hono API with SQLite persistence, admin auth/session handling, project CRUD, and contact request inbox
+- `frontend/`: React + TypeScript + Vite + `react-router-dom` (served as static files by nginx)
+- `backend/`: Hono API + SQLite + admin session auth + content/inbox/analytics management
 
-## Features
+## What Is Implemented
 
-- Dark-only design with blurple and deep purple visual language
-- Sticky navbar
-- Route-based frontend pages:
-  - `/` home (latest 2 projects)
-  - `/projects` all projects
-  - `/contact` contact form
-  - `/admin` admin login + dashboard
-- Admin dashboard:
-  - login with seeded admin account
-  - add/edit/delete projects
-  - view contact requests
-- SQLite-backed persistence for projects and contacts
+- Conversion-focused homepage with:
+  - niche positioning + pricing anchors
+  - productized packages
+  - case studies + outcomes
+  - retainer tiers
+  - trust/operations blocks
+- Route pages:
+  - `/` home
+  - `/projects`
+  - `/services`
+  - `/insights`
+  - `/contact`
+  - `/free-audit`
+  - `/terms`
+  - `/privacy`
+  - `/maintenance-agreement`
+  - `/admin`
+  - `/admin/dashboard`
+- Contact qualification form (budget/timeline/project type)
+- Lead magnet capture endpoint and page
+- Analytics event tracking for funnel actions
+- Robust admin dashboard sections:
+  - profile and socials
+  - projects
+  - packages
+  - retainers
+  - case studies
+  - service landing pages
+  - blog posts
+  - contact inbox + status updates
+  - leads
+  - analytics summary/events
+- Sticky navbar and dark blurple/purple visual system
 
 ## Local Development
 
@@ -35,10 +56,7 @@ npm run dev
 
 Backend runs at `http://localhost:3002`.
 
-Seeded admin defaults:
-
-- Email: `lnieuwenhuis48@icloud.com`
-- Password: `***REMOVED_SECRET***`
+Default seeded admin credentials are read from env (`SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`).
 
 ### Frontend
 
@@ -49,84 +67,121 @@ npm run dev
 ```
 
 Frontend runs at `http://localhost:5173`.
-Vite proxies `/api/*` to `http://localhost:3002` during development.
+Vite proxies `/api/*` to `http://localhost:3002`.
 
-## Backend Deployment (Single Docker Command)
+## Railway Deployment (Monorepo)
 
-1. Configure backend env:
+This repo is now workspace-ready (`package.json` at root) and can be deployed as two Railway services from the same GitHub repository.
 
-```bash
-cd backend
-cp .env.example .env
-```
+### Service 1: Backend API
 
-2. Deploy backend:
+- Create a Railway service from this repo.
+- Set **Root Directory** to `backend`.
+- Build command: `npm run build`
+- Start command: `npm run start`
 
-```bash
-docker compose up -d --build
-```
+Attach a **Railway Volume** to the backend service for SQLite persistence.
 
-This command is backend-only and uses `backend/docker-compose.yml`.
+- Mount path example: `/data`
+- The app automatically uses `RAILWAY_VOLUME_MOUNT_PATH/portfolio.db` when `DB_PATH` is not set.
 
-## Frontend Build and nginx Deploy
+Recommended backend variables:
 
-Build manually on your server:
+- `SEED_ADMIN_EMAIL`
+- `SEED_ADMIN_PASSWORD`
+- `ADMIN_SESSION_TTL_DAYS=30`
+- `CONTACT_EMAIL`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `CORS_ORIGINS=https://safasfly.dev,https://www.safasfly.dev,https://staging.safasfly.dev`
 
-```bash
-cd frontend
-npm ci
-VITE_API_BASE=/api npm run build
-```
+### Service 2: Frontend Web
 
-Output is generated in `frontend/dist/`.
+- Create a second Railway service from this repo.
+- Set **Root Directory** to `frontend`.
+- Build command: `npm run build`
+- Start command: `npm run start`
 
-Serve that directory with nginx and proxy `/api` to backend (`127.0.0.1:3002`).
+Required frontend variable:
 
-Example nginx block:
+- `VITE_API_BASE=https://<your-backend-domain>/api`
 
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name safasfly.dev www.safasfly.dev;
+Example:
 
-    root /var/www/safasfly.dev/dist;
-    index index.html;
+- `VITE_API_BASE=https://api.safasfly.dev/api`
 
-    location /api {
-        proxy_pass http://127.0.0.1:3002;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+Optional staging guard variables:
 
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
+- `VITE_STAGING_GUARD=true` (force guard on any host)
+- `VITE_STAGING_HOST_PREFIX=staging.` (default behavior)
 
-## API Endpoints
+### Domains
 
-Public:
+- Frontend service:
+  - `safasfly.dev`
+  - `www.safasfly.dev`
+- Backend service:
+  - `api.safasfly.dev`
+
+After domain setup:
+
+1. Point frontend `VITE_API_BASE` to backend domain.
+2. Update backend `CORS_ORIGINS` to include frontend domains.
+
+### Notes
+
+- Backend requires Node `>=22` (`node:sqlite`).
+- Frontend serves built SPA via `serve -s dist`.
+- Staging guard is enforced on hosts starting with `staging.` and checks admin password through `/api/auth/staging-unlock`.
+
+## API Surface
+
+### Public
 
 - `GET /api/health`
+- `GET /api/site`
 - `GET /api/about`
+- `GET /api/socials`
 - `GET /api/projects`
 - `GET /api/projects/:id`
-- `GET /api/socials`
+- `GET /api/offers`
+- `GET /api/retainers`
+- `GET /api/case-studies`
+- `GET /api/service-pages`
+- `GET /api/blog-posts`
 - `POST /api/contact`
+- `POST /api/leads`
+- `POST /api/analytics/event`
 
-Auth:
+### Auth
 
+- `POST /api/auth/staging-unlock`
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
 - `GET /api/auth/me`
 
-Admin (authenticated session token via `Authorization: Bearer <token>`):
+### Admin
 
-- `GET /api/admin/projects`
-- `POST /api/admin/projects`
-- `PUT /api/admin/projects/:id`
-- `DELETE /api/admin/projects/:id`
+- `GET /api/admin/dashboard`
+- `GET|PUT /api/admin/profile`
+- `GET|PUT /api/admin/socials`
+- `GET|POST /api/admin/projects`
+- `PUT|DELETE /api/admin/projects/:id`
+- `GET|POST /api/admin/offers`
+- `PUT|DELETE /api/admin/offers/:id`
+- `GET|POST /api/admin/retainers`
+- `PUT|DELETE /api/admin/retainers/:id`
+- `GET|POST /api/admin/case-studies`
+- `PUT|DELETE /api/admin/case-studies/:id`
+- `GET|POST /api/admin/service-pages`
+- `PUT|DELETE /api/admin/service-pages/:id`
+- `GET|POST /api/admin/blog-posts`
+- `PUT|DELETE /api/admin/blog-posts/:id`
 - `GET /api/admin/contacts`
+- `PUT /api/admin/contacts/:id/status`
+- `GET /api/admin/leads`
+- `GET /api/admin/analytics/summary`
+- `GET /api/admin/analytics/events`

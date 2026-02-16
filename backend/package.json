@@ -7,8 +7,12 @@
     "build": "tsc",
     "start": "node dist/server.js"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
+    "dotenv": "^17.3.1",
     "hono": "^4.6.0",
     "nodemailer": "^6.9.16"
   },

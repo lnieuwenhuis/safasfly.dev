@@ -1,0 +1,15 @@
+{
+  "name": "safasfly-monorepo",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "build:backend": "npm --workspace backend run build",
+    "start:backend": "npm --workspace backend run start",
+    "build:frontend": "npm --workspace frontend run build",
+    "start:frontend": "npm --workspace frontend run start"
+  }
+}
+
