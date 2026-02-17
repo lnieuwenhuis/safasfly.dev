@@ -1,141 +1,131 @@
 # safasfly.dev
 
-Dark-theme portfolio and sales site for Lars Nieuwenhuis (solo freelance developer), with independent frontend and backend deployment.
+Monorepo for Lars Nieuwenhuis' portfolio platform.
+
+Current public presentation is student-focused (4th-year MBO4 Software Development), while the backend and admin system
+still include the full content and lead-management structure for a future return to freelancing.
 
 ## Architecture
 
-- `frontend/`: React + TypeScript + Vite + `react-router-dom` (served as static files by nginx)
-- `backend/`: Hono API + SQLite + admin session auth + content/inbox/analytics management
+- `frontend/`: React + TypeScript + Vite + `react-router-dom`
+- `backend/`: Hono API + SQLite + admin auth + content/inbox/analytics management
 
-## What Is Implemented
+## Current Product Direction
 
-- Conversion-focused homepage with:
-  - niche positioning + pricing anchors
-  - productized packages
-  - case studies + outcomes
-  - retainer tiers
-  - trust/operations blocks
-- Route pages:
-  - `/` home
+- Public frontend tone and copy are student portfolio oriented
+- Main public navigation:
+  - `/` (home)
   - `/projects`
-  - `/services`
-  - `/insights`
+  - `/services` (shown as "Skills")
+  - `/insights` (shown as "Notes")
   - `/contact`
-  - `/free-audit`
+  - `/free-audit` (project checklist page)
   - `/terms`
   - `/privacy`
   - `/maintenance-agreement`
+- Admin routes remain:
   - `/admin`
   - `/admin/dashboard`
-- Contact qualification form (budget/timeline/project type)
-- Lead magnet capture endpoint and page
-- Analytics event tracking for funnel actions
-- Robust admin dashboard sections:
-  - profile and socials
-  - projects
-  - packages
-  - retainers
-  - case studies
-  - service landing pages
-  - blog posts
-  - contact inbox + status updates
-  - leads
-  - analytics summary/events
-- Sticky navbar and dark blurple/purple visual system
+
+## Backend Capability Kept Intact
+
+The backend/admin model still supports freelancing-style operations and can be reused without schema changes:
+
+- profile + socials
+- projects
+- offers/packages
+- retainers
+- case studies
+- service landing pages
+- blog posts
+- contact inbox + status tracking
+- lead captures
+- analytics events and summaries
 
 ## Local Development
 
-### Backend
+### 1) Install dependencies
 
 ```bash
-cd backend
 npm install
-cp .env.example .env
-npm run dev
+```
+
+### 2) Run backend API
+
+```bash
+cp backend/.env.example backend/.env
+npm --prefix backend run dev
 ```
 
 Backend runs at `http://localhost:3002`.
 
-Default seeded admin credentials are read from env (`SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`).
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Frontend runs at `http://localhost:5173`.
-Vite proxies `/api/*` to `http://localhost:3002`.
-
-## Railway Deployment (Monorepo)
-
-This repo is now workspace-ready (`package.json` at root) and can be deployed as two Railway services from the same GitHub repository.
-
-### Service 1: Backend API
-
-- Create a Railway service from this repo.
-- Set **Root Directory** to `backend`.
-- Build command: `npm run build`
-- Start command: `npm run start`
-
-Attach a **Railway Volume** to the backend service for SQLite persistence.
-
-- Mount path example: `/data`
-- The app automatically uses `RAILWAY_VOLUME_MOUNT_PATH/portfolio.db` when `DB_PATH` is not set.
-
-Recommended backend variables:
+Default seeded admin credentials come from:
 
 - `SEED_ADMIN_EMAIL`
 - `SEED_ADMIN_PASSWORD`
-- `ADMIN_SESSION_TTL_DAYS=30`
-- `CONTACT_EMAIL`
+
+### 3) Run frontend app
+
+```bash
+npm --prefix frontend run dev
+```
+
+Frontend runs at `http://localhost:5173` and proxies `/api/*` to `http://localhost:3002`.
+
+## Root Workspace Scripts
+
+- `npm run build:backend`
+- `npm run start:backend`
+- `npm run build:frontend`
+- `npm run start:frontend`
+
+## Environment Variables
+
+### Backend (`backend/.env`)
+
+- `DB_PATH` (or Railway volume auto-path via `RAILWAY_VOLUME_MOUNT_PATH`)
+- `ADMIN_SESSION_TTL_DAYS`
+- `SEED_ADMIN_EMAIL`
+- `SEED_ADMIN_PASSWORD`
 - `SMTP_HOST`
 - `SMTP_PORT`
 - `SMTP_SECURE`
 - `SMTP_USER`
 - `SMTP_PASS`
-- `CORS_ORIGINS=https://safasfly.dev,https://www.safasfly.dev,https://staging.safasfly.dev`
+- `CONTACT_EMAIL`
+- `CORS_ORIGINS`
 
-### Service 2: Frontend Web
+### Frontend
 
-- Create a second Railway service from this repo.
-- Set **Root Directory** to `frontend`.
+- `VITE_API_BASE` (default `/api`)
+- `VITE_STAGING_GUARD` (optional)
+- `VITE_STAGING_HOST_PREFIX` (optional, default `staging.`)
+
+## Railway Deployment (Monorepo)
+
+Deploy as two services from the same repository.
+
+### Backend service
+
+- Root directory: `backend`
 - Build command: `npm run build`
 - Start command: `npm run start`
+- Attach a Railway volume for SQLite persistence
+- When `DB_PATH` is empty, DB path resolves to `RAILWAY_VOLUME_MOUNT_PATH/portfolio.db`
 
-Required frontend variable:
+### Frontend service
 
-- `VITE_API_BASE=https://<your-backend-domain>/api`
+- Root directory: `frontend`
+- Build command: `npm run build`
+- Start command: `npm run start`
+- Set `VITE_API_BASE=https://<your-backend-domain>/api`
 
-Example:
+### Domain setup checklist
 
-- `VITE_API_BASE=https://api.safasfly.dev/api`
-
-Optional staging guard variables:
-
-- `VITE_STAGING_GUARD=true` (force guard on any host)
-- `VITE_STAGING_HOST_PREFIX=staging.` (default behavior)
-
-### Domains
-
-- Frontend service:
-  - `safasfly.dev`
-  - `www.safasfly.dev`
-- Backend service:
-  - `api.safasfly.dev`
-
-After domain setup:
-
-1. Point frontend `VITE_API_BASE` to backend domain.
-2. Update backend `CORS_ORIGINS` to include frontend domains.
-
-### Notes
-
-- Backend requires Node `>=22` (`node:sqlite`).
-- Frontend serves built SPA via `serve -s dist`.
-- Staging guard is enforced on hosts starting with `staging.` and checks admin password through `/api/auth/staging-unlock`.
+1. Frontend domains point to frontend service (`safasfly.dev`, `www.safasfly.dev`).
+2. Backend domain points to backend service (for example `api.safasfly.dev`).
+3. Frontend `VITE_API_BASE` points to backend domain.
+4. Backend `CORS_ORIGINS` includes frontend domains.
 
 ## API Surface
 
