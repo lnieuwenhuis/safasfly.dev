@@ -7,11 +7,10 @@ export function PrivacyPage() {
           Privacy Policy
         </h2>
         <p className="text-base-content/80">
-          Contact and lead form submissions are stored to process inquiries, provide requested resources, and deliver
-          project proposals.
+          Contact and checklist form submissions are stored only to respond to messages and send requested resources.
         </p>
         <p className="text-base-content/80">
-          Analytics events are used for product and funnel improvement and do not include payment information.
+          Analytics events are used to understand page usage and improve this portfolio. No payment data is collected.
         </p>
         <p className="text-base-content/80">You can request data deletion by emailing the address listed on the contact page.</p>
       </div>

@@ -10,11 +10,13 @@ export function InsightsPage() {
   return (
     <section className="space-y-6">
       <div className="max-w-3xl space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">Insights</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">Notes</p>
         <h2 className="text-3xl font-bold leading-tight md:text-4xl" style={{ fontFamily: 'Sora, sans-serif' }}>
-          Practical notes
+          Learning notes
         </h2>
-        <p className="text-base-content/80">Short reads on pricing, growth, and delivery.</p>
+        <p className="text-base-content/80">
+          Short write-ups on technical decisions, build trade-offs, and lessons from recent projects.
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
