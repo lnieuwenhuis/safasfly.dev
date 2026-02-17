@@ -4,18 +4,16 @@ export function MaintenanceAgreementPage() {
       <div className="card-body space-y-3 p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">Operations</p>
         <h2 className="text-3xl font-bold" style={{ fontFamily: 'Sora, sans-serif' }}>
-          Maintenance and Hosting Agreement
+          Project Operations Notes
         </h2>
         <p className="text-base-content/80">
-          Monthly maintenance plans include uptime checks, SSL renewals, dependency updates, backup verification, and
-          support response according to your plan SLA.
+          Demo and portfolio projects are monitored for uptime, dependency updates, and basic security hygiene when needed.
         </p>
         <p className="text-base-content/80">
-          Incident handling begins on acknowledgement. Priority levels are assigned based on production impact.
+          Incident handling starts after acknowledgement and is prioritized based on project impact and available time.
         </p>
         <p className="text-base-content/80">
-          Content and feature requests are executed within available monthly hours or scoped separately if they exceed
-          plan capacity.
+          Larger feature updates are planned in separate build cycles so project quality remains predictable.
         </p>
       </div>
     </section>

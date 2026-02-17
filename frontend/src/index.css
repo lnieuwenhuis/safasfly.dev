@@ -2,5 +2,9 @@
 @import 'tailwindcss';
 
 @plugin "daisyui" {
-  themes: night --default;
+  themes: lofi --default;
+}
+
+:root {
+  font-family: 'Outfit', sans-serif;
 }

@@ -25,7 +25,7 @@ export function LeadMagnetPage() {
     try {
       await api.captureLead(form);
       setState('success');
-      setMessage('Thanks. I will send the audit checklist and a short action plan by email.');
+      setMessage('Thanks. I will send the project checklist by email.');
       setForm(initialForm);
       trackEvent('lead_magnet_signup', { source: 'free-audit-page' }).catch(() => undefined);
     } catch (error) {
@@ -38,11 +38,13 @@ export function LeadMagnetPage() {
   return (
     <section className="space-y-6">
       <div className="max-w-3xl space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">Free Resource</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">Free resource</p>
         <h2 className="text-3xl font-bold leading-tight md:text-4xl" style={{ fontFamily: 'Sora, sans-serif' }}>
-          Free website audit checklist
+          Project build checklist
         </h2>
-        <p className="text-base-content/80">Get a concise checklist for speed, trust, conversion, and technical hygiene.</p>
+        <p className="text-base-content/80">
+          A short checklist I use for school and side projects before publishing.
+        </p>
       </div>
 
       <form
@@ -66,7 +68,7 @@ export function LeadMagnetPage() {
           onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
         />
 
-        <label htmlFor="lead-company">Company</label>
+        <label htmlFor="lead-company">School / company (optional)</label>
         <input
           id="lead-company"
           type="text"
@@ -74,7 +76,7 @@ export function LeadMagnetPage() {
           onChange={(event) => setForm((prev) => ({ ...prev, company: event.target.value }))}
         />
 
-        <label htmlFor="lead-website">Website</label>
+        <label htmlFor="lead-website">Project URL (optional)</label>
         <input
           id="lead-website"
           type="url"
@@ -82,7 +84,7 @@ export function LeadMagnetPage() {
           onChange={(event) => setForm((prev) => ({ ...prev, website: event.target.value }))}
         />
 
-        <label htmlFor="lead-use-case">What do you want to improve?</label>
+        <label htmlFor="lead-use-case">What are you working on?</label>
         <textarea
           id="lead-use-case"
           rows={4}
@@ -91,7 +93,7 @@ export function LeadMagnetPage() {
         />
 
         <button type="submit" className="btn btn-primary mt-2 normal-case" disabled={state === 'sending'}>
-          {state === 'sending' ? 'Submitting...' : 'Send me the checklist'}
+          {state === 'sending' ? 'Submitting...' : 'Send checklist'}
         </button>
 
         {state === 'success' ? <p className="text-sm text-success">{message}</p> : null}

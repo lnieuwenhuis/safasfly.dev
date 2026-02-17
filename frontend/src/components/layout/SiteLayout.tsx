@@ -6,8 +6,8 @@ import { trackEvent } from '../../lib/analytics';
 const navItems = [
   { to: '/', label: 'Home', end: true },
   { to: '/projects', label: 'Projects' },
-  { to: '/services', label: 'Services' },
-  { to: '/insights', label: 'Insights' },
+  { to: '/services', label: 'Skills' },
+  { to: '/insights', label: 'Notes' },
   { to: '/contact', label: 'Contact' },
 ];
 
@@ -25,33 +25,33 @@ export function SiteLayout() {
   }, [location.pathname]);
 
   return (
-    <div data-theme="night" className="relative min-h-screen overflow-x-hidden bg-base-100 text-base-content">
+    <div data-theme="lofi" className="relative min-h-screen overflow-x-hidden bg-base-100 text-base-content">
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 opacity-25"
+        className="pointer-events-none fixed inset-0 opacity-45"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 10% -10%, rgba(88,101,242,0.35), transparent 40%), radial-gradient(circle at 100% 0%, rgba(147,112,219,0.22), transparent 34%), radial-gradient(circle at 90% 90%, rgba(58,37,102,0.55), transparent 32%)',
+            'radial-gradient(circle at 0% -10%, rgba(14,165,233,0.25), transparent 45%), radial-gradient(circle at 95% 0%, rgba(250,204,21,0.28), transparent 38%), radial-gradient(circle at 85% 95%, rgba(20,184,166,0.22), transparent 40%)',
         }}
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 opacity-15"
+        className="pointer-events-none fixed inset-0 opacity-35"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(130,140,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(130,140,255,0.08) 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
+            'linear-gradient(rgba(15,23,42,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.06) 1px, transparent 1px)',
+          backgroundSize: '42px 42px',
         }}
       />
       <div
         aria-hidden="true"
         className="pointer-events-none fixed -left-44 -top-40 h-[30rem] w-[30rem] rounded-full blur-3xl"
-        style={{ background: 'radial-gradient(circle, rgba(88,101,242,0.55) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.36) 0%, transparent 70%)' }}
       />
       <div
         aria-hidden="true"
         className="pointer-events-none fixed -right-48 top-40 h-[30rem] w-[30rem] rounded-full blur-3xl"
-        style={{ background: 'radial-gradient(circle, rgba(151,118,255,0.5) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.34) 0%, transparent 70%)' }}
       />
 
       <header className="sticky top-0 z-40 border-b border-primary/20 bg-base-100/80 backdrop-blur">
@@ -87,7 +87,7 @@ export function SiteLayout() {
             </nav>
 
             <NavLink to="/contact" className="btn btn-primary btn-sm hidden normal-case md:inline-flex">
-              Start a project
+              Say hello
             </NavLink>
           </div>
 
@@ -108,7 +108,7 @@ export function SiteLayout() {
                 ))}
               </nav>
               <NavLink to="/contact" className="btn btn-primary btn-sm w-full normal-case">
-                Start a project
+                Say hello
               </NavLink>
             </div>
           ) : null}
@@ -145,10 +145,10 @@ export function SiteLayout() {
             </NavLink>
             <span>•</span>
             <NavLink to="/maintenance-agreement" className="link-hover">
-              Maintenance
+              Ops notes
             </NavLink>
           </p>
-          <p>Solo freelance full-stack delivery + managed hosting</p>
+          <p>4th-year MBO4 Software Development student portfolio</p>
         </div>
       </footer>
     </div>
