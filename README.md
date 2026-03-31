@@ -119,6 +119,7 @@ Deploy as two services from the same repository.
 - Build command: `npm run build`
 - Start command: `npm run start`
 - Set `VITE_API_BASE=https://<your-backend-domain>/api`
+- For lower RAM usage on Railway, deploy the frontend with [frontend/Dockerfile](/Users/larsnieuwenhuis/Documents/GitHub/safasfly.dev/frontend/Dockerfile) instead of the default Node start command. It serves the built Vite app through `nginx:alpine`, which is substantially lighter than `serve`.
 
 ### Domain setup checklist
 
