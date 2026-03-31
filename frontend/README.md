@@ -57,6 +57,7 @@ Optional env vars:
 ## Railway
 
 - Set service root directory to `frontend`
-- Build command: `npm run build`
-- Start command: `npm run start`
+- Recommended: let Railway build from [Dockerfile](/Users/larsnieuwenhuis/Documents/GitHub/safasfly.dev/frontend/Dockerfile) so the runtime is `nginx:alpine`
+- Fallback if you stay on Nixpacks: `npm run build` and `npm run start`
 - Set `VITE_API_BASE=https://<your-backend-domain>/api`
+- The Docker setup includes SPA fallback and long-lived caching for hashed static assets
