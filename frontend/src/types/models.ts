@@ -88,18 +88,6 @@ export interface ServiceLandingPage {
   updatedAt: string;
 }
 
-export interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  body: string;
-  category: string;
-  readTime: string;
-  publishedAt: string;
-  updatedAt: string;
-}
-
 export interface ContactRequest {
   id: number;
   name: string;
@@ -146,7 +134,6 @@ export interface SiteBundle {
   retainers: RetainerPlan[];
   caseStudies: CaseStudy[];
   servicePages: ServiceLandingPage[];
-  blogPosts: BlogPost[];
 }
 
 export interface AdminDashboardStats {

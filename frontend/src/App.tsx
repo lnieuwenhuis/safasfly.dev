@@ -8,7 +8,6 @@ import { AdminAuthProvider } from './state/AdminAuthContext';
 import { SiteDataProvider, useSiteData } from './state/SiteDataContext';
 import { ContactPage } from './pages/ContactPage';
 import { HomePage } from './pages/HomePage';
-import { InsightsPage } from './pages/InsightsPage';
 import { LeadMagnetPage } from './pages/LeadMagnetPage';
 import { MaintenanceAgreementPage } from './pages/MaintenanceAgreementPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -42,7 +41,6 @@ function AppRouter() {
             <Route index element={<HomePage />} />
             <Route path="projects" element={<ProjectsPage />} />
             <Route path="services" element={<ServicesPage />} />
-            <Route path="insights" element={<InsightsPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="free-audit" element={<LeadMagnetPage />} />
             <Route path="terms" element={<TermsPage />} />
