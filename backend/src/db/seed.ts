@@ -1,5 +1,4 @@
 import {
-  BlogPost,
   CaseStudy,
   OfferPackage,
   Project,
@@ -215,35 +214,3 @@ export const seedServicePages: Array<Omit<ServiceLandingPage, 'updatedAt'>> = [
   },
 ];
 
-export const seedBlogPosts: Array<Omit<BlogPost, 'updatedAt'>> = [
-  {
-    id: 'website-cost-2026',
-    slug: 'how-much-does-a-business-website-cost-2026',
-    title: 'How Much Does a Business Website Cost in 2026?',
-    excerpt: 'A practical breakdown of website pricing, hidden costs, and how to budget for delivery and hosting.',
-    body: 'A business website budget should separate one-time build costs from recurring hosting and maintenance. The biggest pricing drivers are scope, integrations, and turnaround speed. For many service businesses, a focused website with clear conversion paths beats a bloated build.',
-    category: 'Pricing',
-    readTime: '6 min read',
-    publishedAt: '2026-01-20T09:00:00.000Z',
-  },
-  {
-    id: 'retainer-vs-one-off',
-    slug: 'retainer-vs-one-off-web-development',
-    title: 'Retainer vs One-Off Development: Which Fits Your Business?',
-    excerpt: 'When to buy fixed-scope projects and when a monthly development retainer gives better outcomes.',
-    body: 'If your roadmap changes monthly, retainers reduce friction and keep momentum. For clear, finite goals, one-off delivery can be more cost-effective. Most growing businesses use a hybrid: project launch first, then a maintenance or growth retainer.',
-    category: 'Strategy',
-    readTime: '5 min read',
-    publishedAt: '2026-01-27T09:00:00.000Z',
-  },
-  {
-    id: 'speed-matters-leads',
-    slug: 'why-site-speed-still-drives-lead-conversion',
-    title: 'Why Site Speed Still Drives Lead Conversion',
-    excerpt: 'Slow landing pages lose buyers before your offer is even seen. Here is how to fix it.',
-    body: 'Performance affects trust and action. A fast first impression keeps users engaged long enough to evaluate your offer. Prioritize image optimization, script discipline, and measured third-party usage to preserve conversion rates.',
-    category: 'Performance',
-    readTime: '4 min read',
-    publishedAt: '2026-02-03T09:00:00.000Z',
-  },
-];

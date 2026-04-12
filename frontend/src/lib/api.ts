@@ -3,7 +3,6 @@ import type {
   AdminLoginResponse,
   AnalyticsEvent,
   AnalyticsSummary,
-  BlogPost,
   CaseStudy,
   ContactRequest,
   LeadCapture,
@@ -279,35 +278,6 @@ export const api = {
 
   deleteAdminServicePage(token: string, id: string) {
     return request<{ success: boolean }>(`/admin/service-pages/${id}`, {
-      method: 'DELETE',
-      headers: adminHeaders(token),
-    });
-  },
-
-  getAdminBlogPosts(token: string) {
-    return request<BlogPost[]>('/admin/blog-posts', {
-      headers: adminHeaders(token),
-    });
-  },
-
-  createAdminBlogPost(token: string, payload: Partial<BlogPost>) {
-    return request<BlogPost>('/admin/blog-posts', {
-      method: 'POST',
-      headers: adminHeaders(token),
-      body: JSON.stringify(payload),
-    });
-  },
-
-  updateAdminBlogPost(token: string, id: string, payload: Partial<BlogPost>) {
-    return request<BlogPost>(`/admin/blog-posts/${id}`, {
-      method: 'PUT',
-      headers: adminHeaders(token),
-      body: JSON.stringify(payload),
-    });
-  },
-
-  deleteAdminBlogPost(token: string, id: string) {
-    return request<{ success: boolean }>(`/admin/blog-posts/${id}`, {
       method: 'DELETE',
       headers: adminHeaders(token),
     });

@@ -6,7 +6,6 @@ import {
   AdminSession,
   AdminUser,
   AnalyticsEvent,
-  BlogPost,
   CaseStudy,
   ContactRequest,
   LeadCapture,
@@ -19,7 +18,6 @@ import {
   SocialLink,
 } from '../types/models.js';
 import {
-  seedBlogPosts,
   seedCaseStudies,
   seedOffers,
   seedProfile,
@@ -117,18 +115,6 @@ interface ServicePageRow {
   offer: string;
   seo_description: string;
   cta_label: string;
-  updated_at: string;
-}
-
-interface BlogPostRow {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  body: string;
-  category: string;
-  read_time: string;
-  published_at: string;
   updated_at: string;
 }
 
@@ -343,20 +329,6 @@ function mapServicePage(row: ServicePageRow): ServiceLandingPage {
   };
 }
 
-function mapBlogPost(row: BlogPostRow): BlogPost {
-  return {
-    id: row.id,
-    slug: row.slug,
-    title: row.title,
-    excerpt: row.excerpt,
-    body: row.body,
-    category: row.category,
-    readTime: row.read_time,
-    publishedAt: row.published_at,
-    updatedAt: row.updated_at,
-  };
-}
-
 function mapContact(row: ContactRequestRow): ContactRequest {
   return {
     id: row.id,
@@ -450,11 +422,6 @@ export interface Repository {
   createServicePage(input: Omit<ServiceLandingPage, 'updatedAt'>): ServiceLandingPage;
   updateServicePage(id: string, input: Omit<ServiceLandingPage, 'id' | 'updatedAt'>): ServiceLandingPage | null;
   deleteServicePage(id: string): boolean;
-
-  listBlogPosts(): BlogPost[];
-  createBlogPost(input: Omit<BlogPost, 'updatedAt'>): BlogPost;
-  updateBlogPost(id: string, input: Omit<BlogPost, 'id' | 'updatedAt'>): BlogPost | null;
-  deleteBlogPost(id: string): boolean;
 
   createContactRequest(input: ContactFormPayload): ContactRequest;
   listContactRequests(): ContactRequest[];
@@ -574,18 +541,6 @@ export function createRepository(env: AppEnv): Repository {
     offer TEXT NOT NULL,
     seo_description TEXT NOT NULL,
     cta_label TEXT NOT NULL,
-    updated_at TEXT NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS blog_posts (
-    id TEXT PRIMARY KEY,
-    slug TEXT NOT NULL UNIQUE,
-    title TEXT NOT NULL,
-    excerpt TEXT NOT NULL,
-    body TEXT NOT NULL,
-    category TEXT NOT NULL,
-    read_time TEXT NOT NULL,
-    published_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
   );
 
@@ -808,29 +763,6 @@ export function createRepository(env: AppEnv): Repository {
     }
   }
 
-  const blogPostsCount = db.prepare('SELECT COUNT(*) AS count FROM blog_posts').get() as unknown as CountRow;
-  if (blogPostsCount.count === 0) {
-    const insertBlogPost = db.prepare(`
-      INSERT INTO blog_posts (
-        id, slug, title, excerpt, body, category, read_time, published_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    for (const entry of seedBlogPosts) {
-      insertBlogPost.run(
-        entry.id,
-        entry.slug,
-        entry.title,
-        entry.excerpt,
-        entry.body,
-        entry.category,
-        entry.readTime,
-        entry.publishedAt,
-        nowIso(),
-      );
-    }
-  }
-
   if (env.seedAdminEmail && env.seedAdminPassword) {
     const adminByEmailStmt = db.prepare('SELECT id, email, password_hash FROM admins WHERE email = ?');
     const existing = adminByEmailStmt.get(env.seedAdminEmail) as AdminRow | undefined;
@@ -929,20 +861,6 @@ export function createRepository(env: AppEnv): Repository {
   `);
   const deleteServicePageStmt = db.prepare('DELETE FROM service_pages WHERE id = ?');
 
-  const listBlogPostsStmt = db.prepare('SELECT * FROM blog_posts ORDER BY published_at DESC, updated_at DESC');
-  const blogPostByIdStmt = db.prepare('SELECT * FROM blog_posts WHERE id = ?');
-  const insertBlogPostStmt = db.prepare(`
-    INSERT INTO blog_posts (
-      id, slug, title, excerpt, body, category, read_time, published_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-  const updateBlogPostStmt = db.prepare(`
-    UPDATE blog_posts
-    SET slug = ?, title = ?, excerpt = ?, body = ?, category = ?, read_time = ?, published_at = ?, updated_at = ?
-    WHERE id = ?
-  `);
-  const deleteBlogPostStmt = db.prepare('DELETE FROM blog_posts WHERE id = ?');
-
   const insertContactStmt = db.prepare(`
     INSERT INTO contact_requests (
       name, email, subject, message, budget_range, timeline, project_type, source, status, created_at
@@ -1018,7 +936,6 @@ export function createRepository(env: AppEnv): Repository {
         retainers: (listRetainersStmt.all() as unknown as RetainerRow[]).map(mapRetainer),
         caseStudies: (listCaseStudiesStmt.all() as unknown as CaseStudyRow[]).map(mapCaseStudy),
         servicePages: (listServicePagesStmt.all() as unknown as ServicePageRow[]).map(mapServicePage),
-        blogPosts: (listBlogPostsStmt.all() as unknown as BlogPostRow[]).map(mapBlogPost),
       };
     },
 
@@ -1327,56 +1244,6 @@ export function createRepository(env: AppEnv): Repository {
 
     deleteServicePage(id: string): boolean {
       return deleteServicePageStmt.run(id).changes > 0;
-    },
-
-    listBlogPosts(): BlogPost[] {
-      return (listBlogPostsStmt.all() as unknown as BlogPostRow[]).map(mapBlogPost);
-    },
-
-    createBlogPost(input): BlogPost {
-      insertBlogPostStmt.run(
-        input.id,
-        input.slug,
-        input.title,
-        input.excerpt,
-        input.body,
-        input.category,
-        input.readTime,
-        input.publishedAt,
-        nowIso(),
-      );
-
-      const row = blogPostByIdStmt.get(input.id) as BlogPostRow | undefined;
-      if (!row) {
-        throw new Error('Blog post was not created');
-      }
-
-      return mapBlogPost(row);
-    },
-
-    updateBlogPost(id, input): BlogPost | null {
-      const result = updateBlogPostStmt.run(
-        input.slug,
-        input.title,
-        input.excerpt,
-        input.body,
-        input.category,
-        input.readTime,
-        input.publishedAt,
-        nowIso(),
-        id,
-      );
-
-      if (result.changes === 0) {
-        return null;
-      }
-
-      const row = blogPostByIdStmt.get(id) as BlogPostRow | undefined;
-      return row ? mapBlogPost(row) : null;
-    },
-
-    deleteBlogPost(id: string): boolean {
-      return deleteBlogPostStmt.run(id).changes > 0;
     },
 
     createContactRequest(input): ContactRequest {

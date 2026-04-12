@@ -7,7 +7,6 @@ import type {
   AdminDashboardStats,
   AnalyticsEvent,
   AnalyticsSummary,
-  BlogPost,
   CaseStudy,
   ContactRequest,
   LeadCapture,
@@ -51,7 +50,6 @@ type DashboardSection =
   | 'retainers'
   | 'caseStudies'
   | 'servicePages'
-  | 'blogPosts'
   | 'inbox'
   | 'leads'
   | 'analytics';
@@ -141,17 +139,6 @@ const emptyServicePageForm = {
   ctaLabel: '',
 };
 
-const emptyBlogPostForm = {
-  id: '',
-  slug: '',
-  title: '',
-  excerpt: '',
-  body: '',
-  category: '',
-  readTime: '',
-  publishedAt: '',
-};
-
 const sections: Array<{ key: DashboardSection; label: string }> = [
   { key: 'overview', label: 'Overview' },
   { key: 'profile', label: 'Profile' },
@@ -160,7 +147,6 @@ const sections: Array<{ key: DashboardSection; label: string }> = [
   { key: 'retainers', label: 'Retainers' },
   { key: 'caseStudies', label: 'Case Studies' },
   { key: 'servicePages', label: 'Service Pages' },
-  { key: 'blogPosts', label: 'Blog Posts' },
   { key: 'inbox', label: 'Inbox' },
   { key: 'leads', label: 'Leads' },
   { key: 'analytics', label: 'Analytics' },
@@ -228,7 +214,6 @@ export function AdminDashboardPage() {
   const [retainers, setRetainers] = useState<RetainerPlan[]>([]);
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
   const [servicePages, setServicePages] = useState<ServiceLandingPage[]>([]);
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [contacts, setContacts] = useState<ContactRequest[]>([]);
   const [leads, setLeads] = useState<LeadCapture[]>([]);
   const [analyticsSummary, setAnalyticsSummary] = useState<AnalyticsSummary>({
@@ -252,9 +237,6 @@ export function AdminDashboardPage() {
 
   const [editingServicePageId, setEditingServicePageId] = useState<string | null>(null);
   const [servicePageForm, setServicePageForm] = useState(emptyServicePageForm);
-
-  const [editingBlogPostId, setEditingBlogPostId] = useState<string | null>(null);
-  const [blogPostForm, setBlogPostForm] = useState(emptyBlogPostForm);
 
   const hasSession = Boolean(session?.token);
   const token = session?.token || '';
@@ -284,7 +266,6 @@ export function AdminDashboardPage() {
           api.getAdminRetainers(token),
           api.getAdminCaseStudies(token),
           api.getAdminServicePages(token),
-          api.getAdminBlogPosts(token),
           api.getAdminContacts(token),
           api.getAdminLeads(token),
         ]),
@@ -305,7 +286,6 @@ export function AdminDashboardPage() {
         nextRetainers,
         nextCaseStudies,
         nextServicePages,
-        nextBlogPosts,
         nextContacts,
         nextLeads,
       ] = coreResult.value;
@@ -325,7 +305,6 @@ export function AdminDashboardPage() {
       setRetainers(nextRetainers);
       setCaseStudies(nextCaseStudies);
       setServicePages(nextServicePages);
-      setBlogPosts(nextBlogPosts);
       setContacts(nextContacts);
       setLeads(nextLeads);
 
@@ -736,57 +715,6 @@ export function AdminDashboardPage() {
       setSuccess('Service page deleted.');
     } catch (cause) {
       setFailure(cause, 'Failed to delete service page');
-    }
-  }
-
-  function startBlogPostEdit(item: BlogPost) {
-    setEditingBlogPostId(item.id);
-    setBlogPostForm({
-      id: item.id,
-      slug: item.slug,
-      title: item.title,
-      excerpt: item.excerpt,
-      body: item.body,
-      category: item.category,
-      readTime: item.readTime,
-      publishedAt: item.publishedAt,
-    });
-  }
-
-  async function saveBlogPost(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    try {
-      if (editingBlogPostId) {
-        await api.updateAdminBlogPost(token, editingBlogPostId, blogPostForm);
-      } else {
-        await api.createAdminBlogPost(token, blogPostForm);
-      }
-
-      setBlogPosts(await api.getAdminBlogPosts(token));
-      setBlogPostForm(emptyBlogPostForm);
-      setEditingBlogPostId(null);
-      setSuccess(editingBlogPostId ? 'Blog post updated.' : 'Blog post created.');
-    } catch (cause) {
-      setFailure(cause, 'Failed to save blog post');
-    }
-  }
-
-  async function deleteBlogPost(id: string) {
-    if (!window.confirm('Delete this blog post?')) {
-      return;
-    }
-
-    try {
-      await api.deleteAdminBlogPost(token, id);
-      setBlogPosts(await api.getAdminBlogPosts(token));
-      if (editingBlogPostId === id) {
-        setEditingBlogPostId(null);
-        setBlogPostForm(emptyBlogPostForm);
-      }
-      setSuccess('Blog post deleted.');
-    } catch (cause) {
-      setFailure(cause, 'Failed to delete blog post');
     }
   }
 
@@ -1633,120 +1561,6 @@ export function AdminDashboardPage() {
                           Edit
                         </button>
                         <button type="button" className="btn btn-outline btn-error btn-sm md:btn-md" onClick={() => deleteServicePage(item.id)}>
-                          Delete
-                        </button>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {section === 'blogPosts' ? (
-            <div className={adminSectionGridClass}>
-              <form className={adminFormCardClass} onSubmit={saveBlogPost}>
-                <h3>{editingBlogPostId ? 'Edit blog post' : 'Create blog post'}</h3>
-
-                <label htmlFor="blog-id">ID</label>
-                <input
-                  id="blog-id"
-                  value={blogPostForm.id}
-                  onChange={(event) => setBlogPostForm((prev) => ({ ...prev, id: event.target.value }))}
-                  disabled={Boolean(editingBlogPostId)}
-                />
-
-                <label htmlFor="blog-slug">Slug</label>
-                <input
-                  id="blog-slug"
-                  value={blogPostForm.slug}
-                  onChange={(event) => setBlogPostForm((prev) => ({ ...prev, slug: event.target.value }))}
-                  required
-                />
-
-                <label htmlFor="blog-title">Title</label>
-                <input
-                  id="blog-title"
-                  value={blogPostForm.title}
-                  onChange={(event) => setBlogPostForm((prev) => ({ ...prev, title: event.target.value }))}
-                  required
-                />
-
-                <label htmlFor="blog-category">Category</label>
-                <input
-                  id="blog-category"
-                  value={blogPostForm.category}
-                  onChange={(event) => setBlogPostForm((prev) => ({ ...prev, category: event.target.value }))}
-                  required
-                />
-
-                <label htmlFor="blog-read">Read time</label>
-                <input
-                  id="blog-read"
-                  value={blogPostForm.readTime}
-                  onChange={(event) => setBlogPostForm((prev) => ({ ...prev, readTime: event.target.value }))}
-                  required
-                />
-
-                <label htmlFor="blog-published">Published at (ISO)</label>
-                <input
-                  id="blog-published"
-                  value={blogPostForm.publishedAt}
-                  onChange={(event) => setBlogPostForm((prev) => ({ ...prev, publishedAt: event.target.value }))}
-                  placeholder="2026-02-16T10:00:00.000Z"
-                />
-
-                <label htmlFor="blog-excerpt">Excerpt</label>
-                <textarea
-                  id="blog-excerpt"
-                  rows={3}
-                  value={blogPostForm.excerpt}
-                  onChange={(event) => setBlogPostForm((prev) => ({ ...prev, excerpt: event.target.value }))}
-                  required
-                />
-
-                <label htmlFor="blog-body">Body</label>
-                <textarea
-                  id="blog-body"
-                  rows={6}
-                  value={blogPostForm.body}
-                  onChange={(event) => setBlogPostForm((prev) => ({ ...prev, body: event.target.value }))}
-                  required
-                />
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <button type="submit" className="btn btn-primary btn-sm md:btn-md">
-                    {editingBlogPostId ? 'Update blog post' : 'Create blog post'}
-                  </button>
-                  {editingBlogPostId ? (
-                    <button
-                      type="button"
-                      className="btn btn-outline btn-primary btn-sm md:btn-md"
-                      onClick={() => {
-                        setEditingBlogPostId(null);
-                        setBlogPostForm(emptyBlogPostForm);
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  ) : null}
-                </div>
-              </form>
-
-              <div className={adminCardClass}>
-                <h3>Blog posts</h3>
-                <div className="space-y-3">
-                  {blogPosts.map((item) => (
-                    <article key={item.id} className={adminListItemClass}>
-                      <div>
-                        <h4>{item.title}</h4>
-                        <p>{item.slug}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button type="button" className="btn btn-outline btn-primary btn-sm md:btn-md" onClick={() => startBlogPostEdit(item)}>
-                          Edit
-                        </button>
-                        <button type="button" className="btn btn-outline btn-error btn-sm md:btn-md" onClick={() => deleteBlogPost(item.id)}>
                           Delete
                         </button>
                       </div>

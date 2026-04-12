@@ -19,12 +19,6 @@ const quickLinks = [
     cta: 'Browse projects',
   },
   {
-    title: 'Notes',
-    summary: 'Short write-ups about what I learn while building.',
-    to: '/insights',
-    cta: 'Read notes',
-  },
-  {
     title: 'Contact',
     summary: 'Internships, collaboration, or questions about my work.',
     to: '/contact',
@@ -114,9 +108,6 @@ export function HomePage() {
             <div className="flex flex-wrap gap-2 pt-1">
               <Link className="btn btn-outline btn-primary btn-sm normal-case" to="/services">
                 Skills
-              </Link>
-              <Link className="btn btn-outline btn-primary btn-sm normal-case" to="/insights">
-                Notes
               </Link>
               <Link className="btn btn-outline btn-primary btn-sm normal-case" to="/free-audit">
                 Checklist

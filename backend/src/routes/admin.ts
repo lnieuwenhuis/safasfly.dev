@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import { Repository } from '../db/repository.js';
 import { requireAdmin } from '../middleware/auth.js';
 import {
-  BlogPost,
   CaseStudy,
   OfferPackage,
   Project,
@@ -170,34 +169,6 @@ function parseServicePagePayload(body: Record<string, unknown>): Omit<ServiceLan
     offer,
     seoDescription,
     ctaLabel,
-  };
-}
-
-function parseBlogPostPayload(body: Record<string, unknown>): Omit<BlogPost, 'updatedAt'> | null {
-  const id = toSlug(sanitizeString(body.id, 120) || sanitizeString(body.title, 120), 60);
-  const slug = toSlug(sanitizeString(body.slug, 140) || sanitizeString(body.title, 140), 120);
-  const title = sanitizeString(body.title, 180);
-  const excerpt = sanitizeString(body.excerpt, 320);
-  const bodyText = sanitizeString(body.body, 12000);
-  const category = sanitizeString(body.category, 80);
-  const readTime = sanitizeString(body.readTime, 80);
-  const publishedAt = sanitizeString(body.publishedAt, 80);
-
-  if (!id || !slug || !title || !excerpt || !bodyText || !category || !readTime) {
-    return null;
-  }
-
-  const normalizedPublishedAt = publishedAt ? publishedAt : new Date().toISOString();
-
-  return {
-    id,
-    slug,
-    title,
-    excerpt,
-    body: bodyText,
-    category,
-    readTime,
-    publishedAt: normalizedPublishedAt,
   };
 }
 
@@ -608,65 +579,6 @@ export function createAdminRoutes(repository: Repository) {
     const deleted = repository.deleteServicePage(id);
     if (!deleted) {
       return c.json({ error: 'Service page not found' }, 404);
-    }
-
-    return c.json({ success: true });
-  });
-
-  app.get('/blog-posts', (c) => {
-    return c.json(repository.listBlogPosts());
-  });
-
-  app.post('/blog-posts', async (c) => {
-    try {
-      const body = (await c.req.json()) as Record<string, unknown>;
-      const payload = parseBlogPostPayload(body);
-      if (!payload) {
-        return c.json({ error: 'Invalid blog post payload' }, 400);
-      }
-
-      return c.json(repository.createBlogPost(payload), 201);
-    } catch (error) {
-      console.error('Failed to create blog post', error);
-      return c.json({ error: 'Failed to create blog post' }, 500);
-    }
-  });
-
-  app.put('/blog-posts/:id', async (c) => {
-    try {
-      const { id } = c.req.param();
-      const body = (await c.req.json()) as Record<string, unknown>;
-      const payload = parseBlogPostPayload({ ...body, id });
-      if (!payload) {
-        return c.json({ error: 'Invalid blog post payload' }, 400);
-      }
-
-      const updated = repository.updateBlogPost(id, {
-        slug: payload.slug,
-        title: payload.title,
-        excerpt: payload.excerpt,
-        body: payload.body,
-        category: payload.category,
-        readTime: payload.readTime,
-        publishedAt: payload.publishedAt,
-      });
-
-      if (!updated) {
-        return c.json({ error: 'Blog post not found' }, 404);
-      }
-
-      return c.json(updated);
-    } catch (error) {
-      console.error('Failed to update blog post', error);
-      return c.json({ error: 'Failed to update blog post' }, 500);
-    }
-  });
-
-  app.delete('/blog-posts/:id', (c) => {
-    const { id } = c.req.param();
-    const deleted = repository.deleteBlogPost(id);
-    if (!deleted) {
-      return c.json({ error: 'Blog post not found' }, 404);
     }
 
     return c.json({ success: true });
