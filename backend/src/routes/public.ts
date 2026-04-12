@@ -125,10 +125,6 @@ export function createPublicRoutes(repository: Repository, env: AppEnv) {
     return c.json(repository.listServicePages());
   });
 
-  app.get('/blog-posts', (c) => {
-    return c.json(repository.listBlogPosts());
-  });
-
   app.post('/contact', async (c) => {
     try {
       const body = (await c.req.json()) as Record<string, unknown>;
